@@ -139,6 +139,16 @@ public class MapGameController implements Initializable {
             System.out.println("func2");
             mapData = new MapData(21, 15);
             chara = new MoveChara(1, 1, mapData);
+           Random random = new Random();
+        int iX = 1;
+        int iY = 1;
+        do{
+            iX = 1 + random.nextInt(18);
+            iY = 1 + random.nextInt(12);
+        }while((mapData.getMap(iX, iY) == MapData.TYPE_WALL)||(iX == 1 && iY == 1));
+
+        item = new Item(iX, iY, mapData);
+        TAKEN = false;           
             mapImageViews = new ImageView[mapData.getHeight() * mapData.getWidth()];
             for (int y = 0; y < mapData.getHeight(); y ++) {
             for (int x = 0; x < mapData.getWidth(); x ++) {
@@ -146,7 +156,7 @@ public class MapGameController implements Initializable {
                 mapImageViews[index] = mapData.getImageView(x, y);
                 }
             }
-            drawMap(chara, mapData);
+            drawMap(chara, mapData,item);
         } catch (Exception ex) {
             System.out.println("func2: Nothing to do");
         }
