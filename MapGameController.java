@@ -12,17 +12,31 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.Group;
 import javafx.scene.layout.Pane;
 import javafx.fxml.FXML;
+import java.util.Random;
 
 public class MapGameController implements Initializable {
     public MapData mapData;
     public MoveChara chara;
     public GridPane mapGrid;
     public ImageView[] mapImageViews;
+    public Item item;
+    public boolean TAKEN;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         mapData = new MapData(21, 15);
         chara = new MoveChara(1, 1, mapData);
+ Random random = new Random();
+        int iX = 1;
+        int iY = 1;
+        do{
+            iX = 1 + random.nextInt(18);
+            iY = 1 + random.nextInt(12);
+        }while((mapData.getMap(iX, iY) == MapData.TYPE_WALL)||(iX == 1 && iY == 1));
+
+        item = new Item(iX, iY, mapData);
+        TAKEN = false;
+    	
         mapImageViews = new ImageView[mapData.getHeight() * mapData.getWidth()];
         for (int y = 0; y < mapData.getHeight(); y ++) {
             for (int x = 0; x < mapData.getWidth(); x ++) {
@@ -30,19 +44,28 @@ public class MapGameController implements Initializable {
                 mapImageViews[index] = mapData.getImageView(x, y);
             }
         }
-        drawMap(chara, mapData);
+        drawMap(chara, mapData, item);
     }
 
     // Draw the map
-    public void drawMap(MoveChara c, MapData m) {
+    public void drawMap(MoveChara c, MapData m, Item i) {
         int cx = c.getPosX();
-        int cy = c.getPosY();
+        int cy = c.getPosY();     
+        int ix = i.getPosX();
+        int iy = i.getPosY();
+        if(cx == ix && cy == iy){
+            TAKEN = true;
+        }
         mapGrid.getChildren().clear();
         for (int y = 0; y < mapData.getHeight(); y ++) {
             for (int x = 0; x < mapData.getWidth(); x ++) {
                 int index = y * mapData.getWidth() + x;
                 if (x == cx && y == cy) {
                     mapGrid.add(c.getCharaImageView(), x, y);
+                } else if(x == ix && y == iy){
+                    if(!TAKEN){
+                        mapGrid.add(i.getItemImageView(), x, y);
+                    }
                 } else {
                     mapGrid.add(mapImageViews[index], x, y);
                 }
@@ -70,7 +93,7 @@ public class MapGameController implements Initializable {
         printAction("UP");
         chara.setCharaDirection(MoveChara.TYPE_UP);
         chara.move(0, -1);
-        drawMap(chara, mapData);
+        drawMap(chara, mapData, item);
     }
 
     // Operations for going the cat down
@@ -78,7 +101,7 @@ public class MapGameController implements Initializable {
         printAction("DOWN");
         chara.setCharaDirection(MoveChara.TYPE_DOWN);
         chara.move(0, 1);
-        drawMap(chara, mapData);
+        drawMap(chara, mapData, item);
     }
 
     // Operations for going the cat right
@@ -86,7 +109,7 @@ public class MapGameController implements Initializable {
         printAction("LEFT");
         chara.setCharaDirection(MoveChara.TYPE_LEFT);
         chara.move(-1, 0);
-        drawMap(chara, mapData);
+        drawMap(chara, mapData, item);
     }
 
     // Operations for going the cat right
@@ -94,7 +117,7 @@ public class MapGameController implements Initializable {
         printAction("RIGHT");
         chara.setCharaDirection(MoveChara.TYPE_RIGHT);
         chara.move(1, 0);
-        drawMap(chara, mapData);
+        drawMap(chara, mapData, item);
     }
 
     @FXML
