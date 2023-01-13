@@ -4,12 +4,20 @@ import javafx.scene.image.ImageView;
 public class MapData {
     public static final int TYPE_SPACE = 0;
     public static final int TYPE_WALL = 1;
-    public static final int TYPE_OTHERS = 2;
+    public static final int TYPE_KEY = 2;
+    public static final int TYPE_GOAL = 3;
+    public static final int TYPE_OTHERS = 4;
     private static final String mapImageFiles[] = {
             "png/SPACE.png",
             "png/WALL.png"
+            "png/KEY.png",
+            "png/GOAL.png"
     };
 
+    static public int xGoal;
+    static public int yGoal;
+    static public int xKey;
+    static public int yKey;
     private Image[] mapImages;
     private ImageView[][] mapImageViews;
     private int[][] maps;
@@ -17,9 +25,9 @@ public class MapData {
     private int height; // height of the map
 
     MapData(int x, int y) {
-        mapImages = new Image[2];
+        mapImages = new Image[5];
         mapImageViews = new ImageView[y][x];
-        for (int i = 0; i < 2; i ++) {
+        for (int i = 0; i < 5; i ++) {
             mapImages[i] = new Image(mapImageFiles[i]);
         }
 
@@ -29,9 +37,37 @@ public class MapData {
 
         fillMap(MapData.TYPE_WALL);
         digMap(1, 3);
+        setGOAL();
+        setKEY();
         setImageViews();
     }
 
+    public void setGOAL(){
+        int xrand = 0;
+        int yrand = 0;
+
+        while (getMap(xrand, yrand) != MapData.TYPE_SPACE){
+            xrand = (int) (Math.random() * width/2  ) * 2 + 1;
+            yrand = (int) (Math.random() * height/2 ) * 2 + 1;
+        }
+        xGoal = xrand;//GOALの座標
+        yGoal = yrand;
+
+        setMap(xGoal,yGoal, MapData.TYPE_GOAL);
+    }
+    public void setKEY(){
+        int xrand = 0;
+        int yrand = 0;
+        while(getMap(xrand, yrand) != MapData.TYPE_SPACE){
+            xrand = (int) (Math.random() * width/2  ) * 2 + 1;
+            yrand = (int) (Math.random() * height/2 ) * 2 + 1;
+        }
+        xKey = xrand;//KEYの座標
+        yKey = yrand;
+
+        setMap(xKey, yKey, MapData.TYPE_KEY);
+    }
+    
     // fill two-dimentional arrays with a given number (maps[y][x])
     private void fillMap(int type) {
         for (int y = 0; y < height; y ++) {
